@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja Virtual - PDV Tanque Digital</title>
+    <meta name="theme-color" content="#0A2463">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+        }
+        
+        .navbar-store {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 60px 0;
+            margin-bottom: 40px;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .product-img {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px 15px 0 0;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        
+        .price-tag {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .cart-sidebar {
+            position: sticky;
+            top: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-add-to-cart {
+            background: linear-gradient(135deg, var(--success), #229954);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .btn-add-to-cart:hover {
+            transform: scale(1.05);
+        }
+        
+        .cart-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+        
+        .badge-store {
+            background: var(--success);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-store">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="#">
+                <i class="bi bi-shop"></i> Loja PDV Tanque
+            </a>
+            <div class="d-flex align-items-center">
+                <a href="pdv.html" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-cash-coin"></i> PDV
+                </a>
+                <a href="dashboard.html" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> Minha Conta
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Meu Perfil</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-bag"></i> Meus Pedidos</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="index.html"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">Bem-vindo à nossa Loja!</h1>
+            <p class="lead">Produtos de qualidade com entrega rápida</p>
+            <div class="input-group mx-auto" style="max-width: 500px;">
+                <input type="text" class="form-control form-control-lg" placeholder="O que você está procurando?">
+                <button class="btn btn-light btn-lg">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Conteúdo Principal -->
+    <div class="container">
+        <div class="row">
+            <!-- Produtos -->
+            <div class="col-lg-9">
+                <div class="row" id="productsGrid">
+                    <!-- Produtos carregados via JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Carrinho -->
+            <div class="col-lg-3">
+                <div class="card cart-sidebar">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-cart3"></i> Meu Carrinho
+                            <span class="badge bg-light text-dark float-end" id="cartCount">0</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="cartItems">
+                            <!-- Itens do carrinho -->
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">R$ 0,00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <strong>Total:</strong>
+                                <strong class="text-success" id="total">R$ 0,00</strong>
+                            </div>
+                            <button class="btn btn-success w-100" onclick="checkout()" disabled id="btnCheckout">
+                                <i class="bi bi-credit-card"></i> Finalizar Compra
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="bi bi-shop"></i> Loja PDV Tanque</h5>
+                    <p>Sua loja virtual completa, integrada ao sistema PDV.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contato</h5>
+                    <p><i class="bi bi-telephone"></i> (84) 99453-3322</p>
+                    <p><i class="bi bi-envelope"></i> ldtnettelecom@gmail.com</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Links Rápidos</h5>
+                    <a href="pdv.html" class="text-white d-block">Sistema PDV</a>
+                    <a href="dashboard.html" class="text-white d-block">Dashboard Admin</a>
+                    <a href="index.html" class="text-white d-block">Login</a>
+                </div>
+            </div>
+            <hr class="bg-white">
+            <div class="text-center">
+                <small>© 2024 PDV Tanque Digital. Todos os direitos reservados.</small>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Registro do Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .catch(err => console.error('Falha ao registrar Service Worker:', err));
+            });
+        }
+
+        const API_URL = 'http://localhost:3000/api';
+        
+        let storeState = {
+            produtos: [],
+            cart: []
+        };
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadStoreProducts();
+            updateCartDisplay();
+        });
+        
+        async function loadStoreProducts() {
+            try {
+                const response = await fetch(`${API_URL}/produtos`);
+                storeState.produtos = await response.json();
+                renderStoreProducts();
+            } catch (error) {
+                console.error('Erro ao carregar produtos:', error);
+                storeState.produtos = [
+                    {id: 1, nome: "Café Premium 500g", preco: 12.90, estoque: 50, categoria: "Bebidas"},
+                    {id: 2, nome: "Energético Lata", preco: 8.50, estoque: 30, categoria: "Bebidas"},
+                    {id: 3, nome: "Água com Gás 500ml", preco: 3.00, estoque: 100, categoria: "Bebidas"},
+                    {id: 4, nome: "Chocolate ao Leite", preco: 6.90, estoque: 80, categoria: "Doces"},
+                    {id: 5, nome: "Salgadinho de Milho", preco: 5.50, estoque: 60, categoria: "Salgados"},
+                    {id: 6, nome: "Pastel de Carne", preco: 7.90, estoque: 40, categoria: "Salgados"}
+                ];
+                renderStoreProducts();
+            }
+        }
+        
+        function renderStoreProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            storeState.produtos.forEach(product => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-4';
+                col.innerHTML = `
+                    <div class="card product-card h-100">
+                        <div class="product-img">
+                            <i class="bi bi-cup-straw display-4 text-muted"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${product.nome}</h5>
+                            <p class="card-text text-muted">${product.categoria || 'Produto'}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="price-tag">R$ ${product.preco.toFixed(2)}</div>
+                                <span class="badge-store">Estoque: ${product.estoque}</span>
+                            </div>
+                            <button class="btn-add-to-cart w-100 mt-3" onclick="addToStoreCart(${product.id})">
+                                <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(col);
+            });
+        }
+        
+        function addToStoreCart(productId) {
+            const product = storeState.produtos.find(p => p.id === productId);
+            if (!product) return;
+            
+            if (product.estoque <= 0) {
+                alert('Produto sem estoque!');
+                return;
+            }
+            
+            const existingItem = storeState.cart.find(item => item.id === productId);
+            if (existingItem) {
+                if (existingItem.quantity >= product.estoque) {
+                    alert('Estoque insuficiente!');
+                    return;
+                }
+                existingItem.quantity += 1;
+            } else {
+                storeState.cart.push({
+                    id: product.id,
+                    nome: product.nome,
+                    preco: product.preco,
+                    quantity: 1
+                });
+            }
+            
+            updateCartDisplay();
+        }
+        
+        function updateCartDisplay() {
+            const container = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const btnCheckout = document.getElementById('btnCheckout');
+            
+            cartCount.textContent = storeState.cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            if (storeState.cart.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted py-3">Carrinho vazio</p>';
+                btnCheckout.disabled = true;
+            } else {
+                let html = '';
+                storeState.cart.forEach((item, index) => {
+                    const itemTotal = item.preco * item.quantity;
+                    html += `
+                        <div class="cart-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>${item.nome}</strong>
+                                    <div class="text-muted small">${item.quantity} × R$ ${item.preco.toFixed(2)}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold text-success">R$ ${itemTotal.toFixed(2)}</div>
+                                    <button class="btn btn-link btn-sm text-danger p-0" onclick="removeFromStoreCart(${index})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                btnCheckout.disabled = false;
+            }
+            
+            updateCartTotals();
+        }
+        
+        function removeFromStoreCart(index) {
+            storeState.cart.splice(index, 1);
+            updateCartDisplay();
+        }
+        
+        function updateCartTotals() {
+            const subtotal = storeState.cart.reduce((sum, item) => sum + (item.preco * item.quantity), 0);
+            const total = subtotal; // Poderia adicionar frete, etc.
+            
+            document.getElementById('subtotal').textContent = `R$ ${subtotal.toFixed(2)}`;
+            document.getElementById('total').textContent = `R$ ${total.toFixed(2)}`;
+        }
+        
+        function checkout() {
+            alert('Funcionalidade de checkout em desenvolvimento!');
+            // Aqui iria a integração com gateway de pagamento
+        }
+    </script>
+</body>
+</html>

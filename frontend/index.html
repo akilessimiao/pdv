@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDV Tanque Digital - Login</title>
+    <meta name="theme-color" content="#0A2463">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 2.2rem;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .input-group-text {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .features {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .feature-item i {
+            color: var(--success);
+            margin-right: 10px;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="status-badge">
+            <span id="apiStatus" class="badge bg-success">
+                <i class="bi bi-wifi"></i> Online
+            </span>
+        </div>
+        
+        <div class="logo">
+            <h1><i class="bi bi-cash-coin"></i> PDV TANQUE</h1>
+            <p class="text-muted">Sistema Completo de Gestão</p>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label">Chave de Ativação</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                <input type="text" id="activationKey" class="form-control" 
+                       value="TANQUE-2024-ABC123" 
+                       placeholder="Digite sua chave única">
+            </div>
+            <div class="form-text text-muted">
+                <i class="bi bi-info-circle"></i> Esta chave é válida por 24 horas
+            </div>
+        </div>
+        
+        <div class="d-grid gap-3">
+            <button id="btnLogin" class="btn btn-primary btn-lg">
+                <i class="bi bi-box-arrow-in-right"></i> Entrar no Sistema PDV
+            </button>
+            
+            <button id="btnDashboard" class="btn btn-outline-primary">
+                <i class="bi bi-speedometer2"></i> Painel Administrativo
+            </button>
+            
+            <button id="btnLoja" class="btn btn-outline-success">
+                <i class="bi bi-shop"></i> Acessar Loja Virtual
+            </button>
+        </div>
+        
+        <div class="features mt-4">
+            <h6 class="mb-3"><i class="bi bi-stars"></i> Recursos Inclusos:</h6>
+            <div class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Gestão completa de produtos e estoque</span>
+            </div>
+            <div class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Vendas com múltiplas formas de pagamento</span>
+            </div>
+            <div class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Relatórios em tempo real</span>
+            </div>
+            <div class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Loja virtual integrada</span>
+            </div>
+            <div class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Backup automático na nuvem</span>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                <i class="bi bi-shield-check"></i> Dados 100% criptografados e seguros
+            </small>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Registro do Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .catch(err => console.error('Falha ao registrar Service Worker:', err));
+            });
+        }
+
+        const API_URL = 'http://localhost:3000/api';
+        
+        // Verificar status da API
+        async function checkAPIStatus() {
+            try {
+                const response = await fetch(`${API_URL}/status`);
+                if (!response.ok) throw new Error('API offline');
+                const data = await response.json();
+                
+                const badge = document.getElementById('apiStatus');
+                badge.className = 'badge bg-success';
+                badge.innerHTML = `<i class="bi bi-wifi"></i> ${data.status}`;
+                
+                return true;
+            } catch (error) {
+                const badge = document.getElementById('apiStatus');
+                badge.className = 'badge bg-danger';
+                badge.innerHTML = `<i class="bi bi-wifi-off"></i> Offline`;
+                
+                return false;
+            }
+        }
+        
+        // Login
+        document.getElementById('btnLogin').addEventListener('click', async () => {
+            const chave = document.getElementById('activationKey').value.trim();
+            
+            if (!chave) {
+                alert('Por favor, insira a chave de ativação!');
+                return;
+            }
+            
+            const btn = document.getElementById('btnLogin');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Entrando...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chave })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Salvar token e dados do usuário
+                    localStorage.setItem('pdv_token', data.token);
+                    localStorage.setItem('pdv_user', JSON.stringify(data.user));
+                    localStorage.setItem('pdv_chave', chave);
+                    
+                    // Redirecionar para PDV
+                    window.location.href = 'pdv.html';
+                } else {
+                    alert('❌ ' + (data.error || 'Chave inválida!'));
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                alert('⚠️ Erro de conexão com o servidor. Verifique se o backend está rodando.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+        
+        // Dashboard
+        document.getElementById('btnDashboard').addEventListener('click', async () => {
+            // Verificar se já está logado
+            const token = localStorage.getItem('pdv_token');
+            if (!token) {
+                alert('Faça login primeiro para acessar o dashboard!');
+                return;
+            }
+            window.location.href = 'dashboard.html';
+        });
+        
+        // Loja Virtual
+        document.getElementById('btnLoja').addEventListener('click', () => {
+            window.location.href = 'loja.html';
+        });
+        
+        // Permitir Enter no campo de chave
+        document.getElementById('activationKey').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('btnLogin').click();
+            }
+        });
+        
+        // Verificar API ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAPIStatus();
+            
+            // Verificar se já está logado
+            const token = localStorage.getItem('pdv_token');
+            if (token) {
+                document.getElementById('activationKey').value = localStorage.getItem('pdv_chave') || '';
+            }
+        });
+    </script>
+</body>
+</html>

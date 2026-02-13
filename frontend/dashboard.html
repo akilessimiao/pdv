@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PDV Tanque Digital</title>
+    <meta name="theme-color" content="#0A2463">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary) 0%, #1a252f 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        
+        .stat-card {
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .stat-card.primary { background: linear-gradient(135deg, var(--primary), #1a252f); }
+        .stat-card.success { background: linear-gradient(135deg, var(--success), #229954); }
+        .stat-card.warning { background: linear-gradient(135deg, var(--warning), #d68910); }
+        .stat-card.danger { background: linear-gradient(135deg, var(--danger), #cb4335); }
+        .stat-card.info { background: linear-gradient(135deg, var(--secondary), #2980b9); }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.9;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            margin: 5px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .low-stock {
+            border-left: 4px solid var(--danger);
+            background: linear-gradient(90deg, rgba(231, 76, 60, 0.1), transparent);
+        }
+        
+        .page-title {
+            color: var(--primary);
+            font-weight: 600;
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar .nav-link span {
+                display: none;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .sidebar .logo h4 {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo text-center mb-4 px-3">
+            <h4><i class="bi bi-graph-up"></i> <span class="d-none d-md-inline">PDV Dashboard</span></h4>
+            <small class="text-muted d-none d-md-inline">Painel Administrativo</small>
+        </div>
+        
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" onclick="loadDashboard()">
+                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="loadProdutos()">
+                    <i class="bi bi-box-seam"></i> <span>Produtos</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="loadVendas()">
+                    <i class="bi bi-receipt"></i> <span>Vendas</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="loadClientes()">
+                    <i class="bi bi-people"></i> <span>Clientes</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="loadRelatorios()">
+                    <i class="bi bi-bar-chart"></i> <span>Relatórios</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="loadConfiguracoes()">
+                    <i class="bi bi-gear"></i> <span>Configurações</span>
+                </a>
+            </li>
+            <li class="nav-item mt-4">
+                <a class="nav-link text-warning" href="pdv.html" target="_blank">
+                    <i class="bi bi-cash-coin"></i> <span>Ir para PDV</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-info" href="loja.html" target="_blank">
+                    <i class="bi bi-shop"></i> <span>Loja Virtual</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="position-absolute bottom-0 w-100 p-3 text-center">
+            <small class="text-muted d-none d-md-inline">PDV Tanque Digital v1.0</small><br>
+            <small id="serverStatus" class="text-success">
+                <i class="bi bi-circle-fill"></i> <span class="d-none d-md-inline">Online</span>
+            </small>
+        </div>
+    </div>
+    
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="page-title" id="pageTitle">Dashboard</h3>
+            <div class="d-flex align-items-center">
+                <div class="me-3">
+                    <small class="text-muted" id="currentDateTime"></small>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <span id="userName">Administrador</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Meu Perfil</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-bell"></i> Notificações</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Conteúdo Dinâmico -->
+        <div id="contentArea">
+            <!-- Dashboard será carregado aqui -->
+        </div>
+    </div>
+    
+    <!-- Modal Novo Produto -->
+    <div class="modal fade" id="modalNovoProduto" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastrar Novo Produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Produto *</label>
+                        <input type="text" class="form-control" id="produtoNome" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Preço (R$) *</label>
+                            <input type="number" class="form-control" id="produtoPreco" step="0.01" min="0" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Estoque Inicial *</label>
+                            <input type="number" class="form-control" id="produtoEstoque" min="0" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Categoria</label>
+                        <select class="form-select" id="produtoCategoria">
+                            <option value="">Selecione...</option>
+                            <option value="Bebidas">Bebidas</option>
+                            <option value="Doces">Doces</option>
+                            <option value="Salgados">Salgados</option>
+                            <option value="Limpeza">Limpeza</option>
+                            <option value="Higiene">Higiene</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Código de Barras (opcional)</label>
+                        <input type="text" class="form-control" id="produtoCodigo">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarProduto()">Salvar Produto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Registro do Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .catch(err => console.error('Falha ao registrar Service Worker:', err));
+            });
+        }
+
+        const API_URL = 'http://localhost:3000/api';
+        
+        // Estado do dashboard
+        let dashboardState = {
+            produtos: [],
+            vendas: [],
+            dashboardData: null,
+            charts: {}
+        };
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar autenticação
+            const token = localStorage.getItem('pdv_token');
+            const user = JSON.parse(localStorage.getItem('pdv_user') || '{}');
+            
+            if (!token || user.tipo !== 'admin') {
+                alert('Acesso restrito a administradores!');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            document.getElementById('userName').textContent = user.nome || 'Administrador';
+            
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+            
+            checkServerStatus();
+            setInterval(checkServerStatus, 30000);
+            
+            loadDashboard();
+        });
+        
+        function updateDateTime() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('pt-BR', { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long',
+                year: 'numeric'
+            });
+            const timeStr = now.toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            document.getElementById('currentDateTime').innerHTML = `
+                <i class="bi bi-calendar"></i> ${dateStr} <br>
+                <i class="bi bi-clock"></i> ${timeStr}
+            `;
+        }
+        
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_URL}/status`);
+                const data = await response.json();
+                const statusEl = document.getElementById('serverStatus');
+                
+                if (data.status === 'ONLINE') {
+                    statusEl.className = 'text-success';
+                    statusEl.innerHTML = '<i class="bi bi-circle-fill"></i> <span class="d-none d-md-inline">Online</span>';
+                } else {
+                    statusEl.className = 'text-danger';
+                    statusEl.innerHTML = '<i class="bi bi-circle-fill"></i> <span class="d-none d-md-inline">Offline</span>';
+                }
+            } catch (error) {
+                document.getElementById('serverStatus').className = 'text-danger';
+                document.getElementById('serverStatus').innerHTML = '<i class="bi bi-circle-fill"></i> <span class="d-none d-md-inline">Offline</span>';
+            }
+        }
+        
+        // ========== FUNÇÕES DE CARREGAMENTO ==========
+        
+        async function loadDashboard() {
+            document.getElementById('pageTitle').textContent = 'Dashboard';
+            document.getElementById('contentArea').innerHTML = `
+                <div class="row" id="statsCards">
+                    <!-- Carregando... -->
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-8">
+                        <div class="chart-container">
+                            <h5>Vendas dos Últimos 7 Dias</h5>
+                            <canvas id="salesChart" height="250"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="chart-container">
+                            <h5>Formas de Pagamento</h5>
+                            <canvas id="paymentChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h5>Produtos com Baixo Estoque</h5>
+                            <div id="lowStockList"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h5>Últimas Vendas</h5>
+                            <div id="recentSalesList"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            await loadDashboardData();
+            renderDashboard();
+        }
+        
+        async function loadProdutos() {
+            document.getElementById('pageTitle').textContent = 'Produtos';
+            document.getElementById('contentArea').innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5>Gestão de Produtos</h5>
+                    <button class="btn btn-primary" onclick="abrirModalNovoProduto()">
+                        <i class="bi bi-plus-circle"></i> Novo Produto
+                    </button>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="input-group">
+                            <input type="text" id="searchProdutos" class="form-control" placeholder="Buscar produto...">
+                            <button class="btn btn-outline-secondary" onclick="filtrarProdutos()">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <select class="form-select" id="filterCategoria" onchange="filtrarProdutos()">
+                            <option value="">Todas categorias</option>
+                            <option value="Bebidas">Bebidas</option>
+                            <option value="Doces">Doces</option>
+                            <option value="Salgados">Salgados</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <select class="form-select" id="filterEstoque" onchange="filtrarProdutos()">
+                            <option value="">Todos</option>
+                            <option value="low">Baixo estoque (< 10)</option>
+                            <option value="out">Sem estoque</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="produtosTable">
+                            <!-- Produtos serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            await carregarProdutos();
+        }
+        
+        async function loadVendas() {
+            document.getElementById('pageTitle').textContent = 'Vendas';
+            document.getElementById('contentArea').innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5>Histórico de Vendas</h5>
+                    <div>
+                        <input type="date" id="filterDataInicio" class="form-control d-inline w-auto" onchange="filtrarVendas()">
+                        <span class="mx-2">até</span>
+                        <input type="date" id="filterDataFim" class="form-control d-inline w-auto" onchange="filtrarVendas()">
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Data/Hora</th>
+                                <th>Cliente</th>
+                                <th>Itens</th>
+                                <th>Total</th>
+                                <th>Pagamento</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vendasTable">
+                            <!-- Vendas serão carregadas aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            await carregarVendas();
+        }
+        
+        function loadClientes() {
+            document.getElementById('pageTitle').textContent = 'Clientes';
+            document.getElementById('contentArea').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bi bi-people display-1 text-muted"></i>
+                    <h4 class="mt-3">Módulo de Clientes</h4>
+                    <p class="text-muted">Em desenvolvimento</p>
+                    <p>Próxima atualização: Cadastro de clientes, histórico de compras, fidelidade</p>
+                </div>
+            `;
+        }
+        
+        function loadRelatorios() {
+            document.getElementById('pageTitle').textContent = 'Relatórios';
+            document.getElementById('contentArea').innerHTML = `
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card stat-card info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Relatório Diário</h6>
+                                        <p class="card-text">Vendas do dia atual</p>
+                                    </div>
+                                    <i class="bi bi-file-text stat-icon"></i>
+                                </div>
+                                <button class="btn btn-light btn-sm w-100 mt-3" onclick="gerarRelatorioDiario()">
+                                    Gerar PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card stat-card warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Relatório Mensal</h6>
+                                        <p class="card-text">Análise mensal de vendas</p>
+                                    </div>
+                                    <i class="bi bi-calendar-month stat-icon"></i>
+                                </div>
+                                <button class="btn btn-light btn-sm w-100 mt-3" onclick="gerarRelatorioMensal()">
+                                    Gerar PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card stat-card success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Relatório de Produtos</h6>
+                                        <p class="card-text">Mais vendidos e estoque</p>
+                                    </div>
+                                    <i class="bi bi-box-seam stat-icon"></i>
+                                </div>
+                                <button class="btn btn-light btn-sm w-100 mt-3" onclick="gerarRelatorioProdutos()">
+                                    Gerar PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container mt-4">
+                    <h5>Exportar Dados</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-primary w-100 mb-2" onclick="exportarVendasCSV()">
+                                <i class="bi bi-file-earmark-excel"></i> Vendas (CSV)
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-success w-100 mb-2" onclick="exportarProdutosCSV()">
+                                <i class="bi bi-file-earmark-excel"></i> Produtos (CSV)
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-warning w-100 mb-2" onclick="exportarJSON()">
+                                <i class="bi bi-file-code"></i> Backup (JSON)
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-outline-danger w-100 mb-2" onclick="restaurarBackup()">
+                                <i class="bi bi-arrow-counterclockwise"></i> Restaurar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function loadConfiguracoes() {
+            document.getElementById('pageTitle').textContent = 'Configurações';
+            document.getElementById('contentArea').innerHTML = `
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h5><i class="bi bi-shop"></i> Configurações da Loja</h5>
+                            <form id="configForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Nome da Loja</label>
+                                    <input type="text" class="form-control" value="PDV Tanque Digital">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">CNPJ</label>
+                                    <input type="text" class="form-control" placeholder="00.000.000/0000-00">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Endereço</label>
+                                    <textarea class="form-control" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Telefone</label>
+                                    <input type="tel" class="form-control" placeholder="(11) 99999-9999">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h5><i class="bi bi-receipt"></i> Configurações do PDV</h5>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="impressaoAuto" checked>
+                                <label class="form-check-label" for="impressaoAuto">Impressão automática de recibos</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="notificacoes" checked>
+                                <label class="form-check-label" for="notificacoes">Notificações de baixo estoque</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="backupAuto">
+                                <label class="form-check-label" for="backupAuto">Backup automático diário</label>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mensagem do Recibo</label>
+                                <textarea class="form-control" rows="3">Obrigado pela preferência! Volte sempre.</textarea>
+                            </div>
+                            <button class="btn btn-primary">Salvar Configurações PDV</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container mt-4">
+                    <h5><i class="bi bi-key"></i> Chaves de Ativação</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Chave</th>
+                                    <th>Usuário</th>
+                                    <th>Tipo</th>
+                                    <th>Data de Expiração</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>TANQUE-2024-ABC123</code></td>
+                                    <td>Administrador</td>
+                                    <td><span class="badge bg-primary">Admin</span></td>
+                                    <td>31/12/2024</td>
+                                    <td><span class="badge bg-success">Ativa</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-success" onclick="gerarNovaChave()">
+                        <i class="bi bi-plus-circle"></i> Gerar Nova Chave
+                    </button>
+                </div>
+            `;
+        }
+        
+        // ========== FUNÇÕES DE DADOS ==========
+        
+        async function loadDashboardData() {
+            try {
+                const [dashboardRes, produtosRes, vendasRes] = await Promise.all([
+                    fetch(`${API_URL}/dashboard`),
+                    fetch(`${API_URL}/produtos`),
+                    fetch(`${API_URL}/vendas?limit=50`)
+                ]);
+                
+                dashboardState.dashboardData = await dashboardRes.json();
+                dashboardState.produtos = await produtosRes.json();
+                dashboardState.vendas = await vendasRes.json();
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                // Dados de exemplo
+                dashboardState.dashboardData = {
+                    vendas_hoje: { quantidade: 24, valor: 587.90 },
+                    baixo_estoque: 3,
+                    total_geral: 12450.75,
+                    total_produtos: 10
+                };
+                
+                dashboardState.produtos = [
+                    {id: 1, nome: "Café Premium", preco: 12.90, estoque: 5, categoria: "Bebidas"},
+                    {id: 2, nome: "Energético", preco: 8.50, estoque: 30, categoria: "Bebidas"},
+                    {id: 3, nome: "Chocolate", preco: 6.90, estoque: 2, categoria: "Doces"}
+                ];
+                
+                dashboardState.vendas = [
+                    {id: 1001, total: 45.80, forma_pagamento: "cartão", data: "2024-01-15T14:30:00Z", cliente: "Consumidor", itens: '[{"nome": "Café", "quantity": 2}]'},
+                    {id: 1002, total: 23.50, forma_pagamento: "dinheiro", data: "2024-01-15T14:25:00Z", cliente: "Maria Silva", itens: '[{"nome": "Água", "quantity": 1}]'},
+                    {id: 1003, total: 67.90, forma_pagamento: "pix", data: "2024-01-15T13:45:00Z", cliente: "João Santos", itens: '[{"nome": "Chocolate", "quantity": 3}]'}
+                ];
+            }
+        }
+        
+        function renderDashboard() {
+            // Atualizar cards de estatísticas
+            const data = dashboardState.dashboardData;
+            document.getElementById('statsCards').innerHTML = `
+                <div class="col-md-3">
+                    <div class="stat-card success">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
+                                <h6 class="mt-2">Vendas Hoje</h6>
+                            </div>
+                            <div class="text-end">
+                                <h3>R$ ${data.vendas_hoje.valor.toFixed(2)}</h3>
+                                <small>${data.vendas_hoje.quantidade} vendas</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card primary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                                <h6 class="mt-2">Total Geral</h6>
+                            </div>
+                            <div class="text-end">
+                                <h3>R$ ${data.total_geral.toFixed(2)}</h3>
+                                <small>Acumulado</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card info">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+                                <h6 class="mt-2">Produtos</h6>
+                            </div>
+                            <div class="text-end">
+                                <h3>${data.total_produtos || dashboardState.produtos.length}</h3>
+                                <small>Cadastrados</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card danger">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+                                <h6 class="mt-2">Baixo Estoque</h6>
+                            </div>
+                            <div class="text-end">
+                                <h3>${data.baixo_estoque}</h3>
+                                <small>Precisa repor</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Atualizar lista de baixo estoque
+            const lowStockProducts = dashboardState.produtos.filter(p => p.estoque < 10);
+            let lowStockHtml = '';
+            
+            if (lowStockProducts.length === 0) {
+                lowStockHtml = '<p class="text-center text-muted py-3">Todos os produtos com estoque adequado</p>';
+            } else {
+                lowStockProducts.forEach(produto => {
+                    lowStockHtml += `
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div>
+                                <strong>${produto.nome}</strong>
+                                <div class="text-muted small">${produto.categoria || 'Geral'}</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge ${produto.estoque < 5 ? 'bg-danger' : 'bg-warning'}">
+                                    ${produto.estoque} unidades
+                                </span>
+                                <button class="btn btn-sm btn-outline-primary ms-2" onclick="reporEstoque(${produto.id})">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('lowStockList').innerHTML = lowStockHtml;
+            
+            // Atualizar últimas vendas
+            const recentVendas = dashboardState.vendas.slice(0, 5);
+            let salesHtml = '';
+            
+            recentVendas.forEach(venda => {
+                const paymentIcon = venda.forma_pagamento === 'cartao' ? 'bi-credit-card' :
+                                  venda.forma_pagamento === 'pix' ? 'bi-qr-code' : 'bi-cash';
+                const date = new Date(venda.data).toLocaleDateString('pt-BR');
+                
+                salesHtml += `
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <div>
+                            <strong>Venda #${venda.id}</strong>
+                            <div class="text-muted small">${date} • ${venda.cliente}</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="fw-bold text-success">R$ ${venda.total.toFixed(2)}</span>
+                            <div>
+                                <span class="badge bg-secondary">
+                                    <i class="bi ${paymentIcon}"></i> ${venda.forma_pagamento}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('recentSalesList').innerHTML = salesHtml;
+            
+            // Criar gráficos
+            createCharts();
+        }
+        
+        function createCharts() {
+            // Destruir gráficos existentes
+            if (dashboardState.charts.salesChart) {
+                dashboardState.charts.salesChart.destroy();
+            }
+            if (dashboardState.charts.paymentChart) {
+                dashboardState.charts.paymentChart.destroy();
+            }
+            
+            // Gráfico de vendas
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            dashboardState.charts.salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Vendas (R$)',
+                        data: [450, 520, 480, 610, 720, 680, 590],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de formas de pagamento
+            const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+            dashboardState.charts.paymentChart = new Chart(paymentCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Dinheiro', 'Cartão', 'Pix'],
+                    datasets: [{
+                        data: [45, 35, 20],
+                        backgroundColor: [
+                            '#27ae60', // Verde para dinheiro
+                            '#3498db', // Azul para cartão
+                            '#9b59b6'  // Roxo para pix
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+        
+        async function carregarProdutos() {
+            try {
+                const response = await fetch(`${API_URL}/produtos`);
+                dashboardState.produtos = await response.json();
+                renderProdutosTable();
+            } catch (error) {
+                console.error('Erro ao carregar produtos:', error);
+                alert('Erro ao carregar produtos');
+            }
+        }
+        
+        function renderProdutosTable() {
+            const tbody = document.getElementById('produtosTable');
+            let html = '';
+            
+            dashboardState.produtos.forEach(produto => {
+                const statusClass = produto.estoque <= 0 ? 'bg-danger' : 
+                                   produto.estoque < 10 ? 'bg-warning' : 'bg-success';
+                const statusText = produto.estoque <= 0 ? 'Sem estoque' : 
+                                   produto.estoque < 10 ? 'Baixo' : 'OK';
+                
+                html += `
+                    <tr>
+                        <td>${produto.id}</td>
+                        <td><strong>${produto.nome}</strong></td>
+                        <td>${produto.categoria || 'Geral'}</td>
+                        <td class="fw-bold text-success">R$ ${produto.preco.toFixed(2)}</td>
+                        <td>${produto.estoque}</td>
+                        <td>
+                            <span class="badge ${statusClass}">${statusText}</span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="editarProduto(${produto.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-success" onclick="reporEstoque(${produto.id})">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="excluirProduto(${produto.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        async function carregarVendas() {
+            try {
+                const response = await fetch(`${API_URL}/vendas`);
+                dashboardState.vendas = await response.json();
+                renderVendasTable();
+            } catch (error) {
+                console.error('Erro ao carregar vendas:', error);
+                alert('Erro ao carregar vendas');
+            }
+        }
+        
+        function renderVendasTable() {
+            const tbody = document.getElementById('vendasTable');
+            let html = '';
+            
+            dashboardState.vendas.forEach(venda => {
+                const date = new Date(venda.data);
+                const dateStr = date.toLocaleDateString('pt-BR');
+                const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                
+                // Tentar parsear itens (pode ser string JSON ou array)
+                let items = [];
+                try {
+                    items = typeof venda.itens === 'string' ? JSON.parse(venda.itens) : venda.itens || [];
+                } catch (e) {
+                    items = [];
+                }
+                
+                const itemsText = items.length > 0 ? 
+                    `${items.length} ${items.length === 1 ? 'item' : 'itens'}` : 
+                    'Nenhum item';
+                
+                html += `
+                    <tr>
+                        <td><strong>#${venda.id}</strong></td>
+                        <td>
+                            <div>${dateStr}</div>
+                            <small class="text-muted">${timeStr}</small>
+                        </td>
+                        <td>${venda.cliente || 'Consumidor'}</td>
+                        <td>${itemsText}</td>
+                        <td class="fw-bold text-success">R$ ${venda.total.toFixed(2)}</td>
+                        <td>
+                            <span class="badge bg-secondary">
+                                ${venda.forma_pagamento || 'Não informado'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="verDetalhesVenda(${venda.id})">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        // ========== FUNÇÕES DE AÇÕES ==========
+        
+        function abrirModalNovoProduto() {
+            document.getElementById('produtoNome').value = '';
+            document.getElementById('produtoPreco').value = '';
+            document.getElementById('produtoEstoque').value = '0';
+            document.getElementById('produtoCategoria').value = '';
+            document.getElementById('produtoCodigo').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('modalNovoProduto'));
+            modal.show();
+        }
+        
+        async function salvarProduto() {
+            const nome = document.getElementById('produtoNome').value.trim();
+            const preco = parseFloat(document.getElementById('produtoPreco').value);
+            const estoque = parseInt(document.getElementById('produtoEstoque').value);
+            const categoria = document.getElementById('produtoCategoria').value;
+            
+            if (!nome || isNaN(preco) || preco <= 0 || isNaN(estoque) || estoque < 0) {
+                alert('Preencha todos os campos obrigatórios corretamente!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/produtos`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nome: nome,
+                        preco: preco,
+                        estoque: estoque,
+                        categoria: categoria || undefined
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Produto cadastrado com sucesso!');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalNovoProduto'));
+                    modal.hide();
+                    
+                    // Recarregar produtos
+                    await carregarProdutos();
+                } else {
+                    alert('Erro ao cadastrar produto: ' + (result.error || 'Desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão com o servidor');
+            }
+        }
+        
+        async function reporEstoque(produtoId) {
+            const quantidade = prompt('Quantidade a adicionar ao estoque:', '10');
+            if (quantidade === null || quantidade === '') return;
+            
+            const qtd = parseInt(quantidade);
+            if (isNaN(qtd) || qtd <= 0) {
+                alert('Quantidade inválida!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/repor-estoque`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        produto_id: produtoId,
+                        quantidade: qtd
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Estoque reposto! Novo estoque: ${result.produto.estoque}`);
+                    await carregarProdutos();
+                } else {
+                    alert('Erro ao repor estoque: ' + (result.error || 'Desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão com o servidor');
+            }
+        }
+        
+        async function excluirProduto(produtoId) {
+            if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/produtos/${produtoId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Produto excluído com sucesso!');
+                    await carregarProdutos();
+                } else {
+                    alert('Erro ao excluir produto: ' + (result.error || 'Desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão com o servidor');
+            }
+        }
+        
+        function editarProduto(produtoId) {
+            alert('Funcionalidade de edição em desenvolvimento!');
+            // Implementar edição
+        }
+        
+        function verDetalhesVenda(vendaId) {
+            const venda = dashboardState.vendas.find(v => v.id === vendaId);
+            if (!venda) {
+                alert('Venda não encontrada!');
+                return;
+            }
+            
+            let items = [];
+            try {
+                items = typeof venda.itens === 'string' ? JSON.parse(venda.itens) : venda.itens || [];
+            } catch (e) {
+                items = [];
+            }
+            
+            const itemsHtml = items.map(item => 
+                `• ${item.nome || 'Item'} - ${item.quantity || 1} × R$ ${(item.preco || 0).toFixed(2)}`
+            ).join('<br>');
+            
+            const modalHtml = `
+                <div class="modal fade" id="modalVendaDetalhes" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Venda #${venda.id}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Data:</strong> ${new Date(venda.data).toLocaleString('pt-BR')}</p>
+                                <p><strong>Cliente:</strong> ${venda.cliente || 'Consumidor'}</p>
+                                <p><strong>Forma de Pagamento:</strong> ${venda.forma_pagamento}</p>
+                                <p><strong>Total:</strong> R$ ${venda.total.toFixed(2)}</p>
+                                <hr>
+                                <p><strong>Itens:</strong></p>
+                                <div>${itemsHtml || 'Nenhum item registrado'}</div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="button" class="btn btn-primary" onclick="imprimirVenda(${venda.id})">
+                                    <i class="bi bi-printer"></i> Imprimir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar modal ao DOM
+            const modalContainer = document.createElement('div');
+            modalContainer.innerHTML = modalHtml;
+            document.body.appendChild(modalContainer);
+            
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('modalVendaDetalhes'));
+            modal.show();
+            
+            // Remover modal do DOM após fechar
+            modalContainer.addEventListener('hidden.bs.modal', function() {
+                document.body.removeChild(modalContainer);
+            });
+        }
+        
+        function filtrarProdutos() {
+            const searchTerm = document.getElementById('searchProdutos').value.toLowerCase();
+            const categoria = document.getElementById('filterCategoria').value;
+            const estoqueFilter = document.getElementById('filterEstoque').value;
+            
+            const filtered = dashboardState.produtos.filter(produto => {
+                // Filtro por busca
+                if (searchTerm && !produto.nome.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+                
+                // Filtro por categoria
+                if (categoria && produto.categoria !== categoria) {
+                    return false;
+                }
+                
+                // Filtro por estoque
+                if (estoqueFilter === 'low' && produto.estoque >= 10) {
+                    return false;
+                }
+                if (estoqueFilter === 'out' && produto.estoque > 0) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // Atualizar tabela com produtos filtrados
+            const tbody = document.getElementById('produtosTable');
+            let html = '';
+            
+            filtered.forEach(produto => {
+                const statusClass = produto.estoque <= 0 ? 'bg-danger' : 
+                                   produto.estoque < 10 ? 'bg-warning' : 'bg-success';
+                const statusText = produto.estoque <= 0 ? 'Sem estoque' : 
+                                   produto.estoque < 10 ? 'Baixo' : 'OK';
+                
+                html += `
+                    <tr>
+                        <td>${produto.id}</td>
+                        <td><strong>${produto.nome}</strong></td>
+                        <td>${produto.categoria || 'Geral'}</td>
+                        <td class="fw-bold text-success">R$ ${produto.preco.toFixed(2)}</td>
+                        <td>${produto.estoque}</td>
+                        <td>
+                            <span class="badge ${statusClass}">${statusText}</span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="editarProduto(${produto.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-success" onclick="reporEstoque(${produto.id})">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="excluirProduto(${produto.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function filtrarVendas() {
+            const inicio = document.getElementById('filterDataInicio').value;
+            const fim = document.getElementById('filterDataFim').value;
+            
+            // Implementar filtro por data
+            alert('Filtro por data em desenvolvimento!');
+        }
+        
+        function gerarRelatorioDiario() {
+            const today = new Date().toLocaleDateString('pt-BR');
+            const report = `
+                RELATÓRIO DIÁRIO - ${today}
+                =================================
+                Total de Vendas: ${dashboardState.dashboardData.vendas_hoje.quantidade}
+                Valor Total: R$ ${dashboardState.dashboardData.vendas_hoje.valor.toFixed(2)}
+                =================================
+                Produtos com Baixo Estoque: ${dashboardState.dashboardData.baixo_estoque}
+                =================================
+                Gerado em: ${new Date().toLocaleString('pt-BR')}
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Relatório Diário - PDV Tanque Digital</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            pre { white-space: pre-wrap; font-size: 14px; }
+                            @media print { body { margin: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        <pre>${report}</pre>
+                        <script>
+                            window.onload = function() {
+                                window.print();
+                                setTimeout(function() {
+                                    window.close();
+                                }, 1000);
+                            };
+                        <\/script>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+        
+        function gerarRelatorioMensal() {
+            alert('Relatório mensal em desenvolvimento!');
+        }
+        
+        function gerarRelatorioProdutos() {
+            alert('Relatório de produtos em desenvolvimento!');
+        }
+        
+        function exportarVendasCSV() {
+            // Implementar exportação CSV
+            alert('Exportação CSV em desenvolvimento!');
+        }
+        
+        function exportarProdutosCSV() {
+            alert('Exportação produtos CSV em desenvolvimento!');
+        }
+        
+        function exportarJSON() {
+            const data = {
+                produtos: dashboardState.produtos,
+                vendas: dashboardState.vendas,
+                exportado_em: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `backup-pdv-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        function restaurarBackup() {
+            alert('Restauração de backup em desenvolvimento!');
+        }
+        
+        function gerarNovaChave() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let key = 'TANQUE-';
+            for (let i = 0; i < 8; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            alert(`Nova chave gerada:\n\n${key}\n\nEsta chave permite acesso completo ao sistema. Guarde-a com segurança!`);
+        }
+        
+        function imprimirVenda(vendaId) {
+            alert('Impressão de venda em desenvolvimento!');
+        }
+        
+        function logout() {
+            if (confirm('Deseja sair do dashboard?')) {
+                localStorage.removeItem('pdv_token');
+                localStorage.removeItem('pdv_user');
+                localStorage.removeItem('pdv_chave');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>PDV Tanque Digital - Ponto de Venda Profissional</title>
+    <meta name="theme-color" content="#0A2463">
+    <link rel="manifest" href="manifest.webmanifest">
+    <!-- Bootstrap 5 (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* ===== IDENTIDADE VISUAL TANQUE DIGITAL ===== */
+        :root {
+            --td-primary: #0A2463;      /* Azul profundo - confiança */
+            --td-secondary: #3E92CC;     /* Azul médio - inovação */
+            --td-accent: #FFD166;        /* Amarelo estratégico - ação */
+            --td-success: #27ae60;       /* Verde - sucesso */
+            --td-danger: #e74c3c;        /* Vermelho - alerta */
+            --td-dark: #1E1E24;          /* Quase preto - elegância */
+            --td-light: #F5F7FA;         /* Fundo limpo */
+            --td-gradient: linear-gradient(135deg, #0A2463 0%, #3E92CC 100%);
+        }
+
+        body {
+            background: var(--td-light);
+            font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        /* Scrollbar personalizada (moderna) */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--td-secondary); border-radius: 10px; }
+
+        /* Header com gradiente e logo */
+        .td-header {
+            background: var(--td-gradient);
+            box-shadow: 0 8px 20px rgba(10,36,99,0.15);
+            padding: 12px 0;
+            margin-bottom: 25px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .td-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .td-logo-icon {
+            background: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: var(--td-primary);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .td-logo-text h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        .td-logo-text span {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            display: block;
+            font-weight: 400;
+        }
+
+        .td-user-badge {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* Cards com sombra elegante */
+        .td-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            background: white;
+            overflow: hidden;
+        }
+
+        .td-card:hover {
+            box-shadow: 0 15px 35px rgba(10,36,99,0.1);
+        }
+
+        .td-card-header {
+            background: white;
+            border-bottom: 2px solid var(--td-light);
+            padding: 18px 20px;
+            font-weight: 600;
+            color: var(--td-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .td-card-header i {
+            color: var(--td-secondary);
+            font-size: 1.3rem;
+        }
+
+        /* Produtos em grid */
+        .product-card {
+            border: 2px solid transparent;
+            border-radius: 16px;
+            transition: all 0.25s;
+            cursor: pointer;
+            height: 100%;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .product-card:hover {
+            border-color: var(--td-secondary);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(62,146,204,0.15);
+        }
+
+        .product-card .card-body {
+            padding: 18px;
+        }
+
+        .product-price {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--td-success);
+            line-height: 1.2;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: var(--td-dark);
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        /* Badge de estoque */
+        .badge-stock {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        /* Barra de busca com ícone */
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            height: 56px;
+            border-radius: 30px;
+            border: 2px solid #eef2f6;
+            padding-left: 25px;
+            padding-right: 60px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--td-secondary);
+            box-shadow: 0 0 0 4px rgba(62,146,204,0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--td-secondary);
+            font-size: 1.3rem;
+        }
+
+        /* Botões com gradiente Tanque Digital */
+        .btn-td-primary {
+            background: var(--td-gradient);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 6px 15px rgba(10,36,99,0.2);
+        }
+
+        .btn-td-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(10,36,99,0.3);
+            color: white;
+        }
+
+        .btn-td-success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        .btn-td-outline {
+            background: white;
+            border: 2px solid var(--td-secondary);
+            color: var(--td-primary);
+            border-radius: 50px;
+            font-weight: 600;
+            padding: 12px 20px;
+        }
+
+        /* Carrinho - container sticky */
+        .cart-container {
+            position: sticky;
+            top: 20px;
+            border-radius: 24px;
+            border: none;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .cart-header {
+            background: var(--td-gradient);
+            color: white;
+            padding: 18px 22px;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .cart-item {
+            border-bottom: 1px solid #edf2f7;
+            padding: 15px 20px;
+            transition: background 0.2s;
+        }
+
+        .cart-item:hover {
+            background: #fafcff;
+        }
+
+        .total-display {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--td-primary);
+        }
+
+        /* Formas de pagamento */
+        .payment-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--td-secondary);
+            background: rgba(62,146,204,0.03);
+        }
+
+        .payment-option.selected {
+            border-color: var(--td-success);
+            background: rgba(39,174,96,0.05);
+        }
+
+        /* Modal personalizado */
+        .td-modal .modal-content {
+            border-radius: 28px;
+            border: none;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        }
+
+        .td-modal .modal-header {
+            background: var(--td-gradient);
+            color: white;
+            border-radius: 28px 28px 0 0;
+        }
+
+        /* Teclado rápido */
+        .keypad-btn {
+            height: 58px;
+            font-weight: 600;
+            border-radius: 16px;
+            transition: all 0.15s;
+        }
+
+        .keypad-btn:hover {
+            background: var(--td-secondary);
+            color: white;
+        }
+
+        /* Utilitários */
+        .cursor-pointer { cursor: pointer; }
+        .fs-small { font-size: 0.85rem; }
+        
+        /* Responsividade extrema */
+        @media (max-width: 768px) {
+            .td-logo-text h1 { font-size: 18px; }
+            .td-logo-icon { width: 40px; height: 40px; font-size: 20px; }
+            .product-price { font-size: 1.3rem; }
+            .total-display { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER TANQUE DIGITAL ===== -->
+    <div class="td-header">
+        <div class="container-fluid px-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="td-logo">
+                    <div class="td-logo-icon">
+                        💧
+                    </div>
+                    <div class="td-logo-text">
+                        <h1>TANQUE DIGITAL</h1>
+                        <span>Sistema PDV Profissional</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="td-user-badge d-none d-md-flex">
+                        <i class="bi bi-person-circle fs-5"></i>
+                        <span><strong>João Silva</strong> (Operador)</span>
+                    </div>
+                    <div class="text-white d-none d-md-block">
+                        <div id="currentTime" class="fw-bold"></div>
+                        <div id="currentDate" class="small opacity-75"></div>
+                    </div>
+                    <button class="btn btn-outline-light btn-sm rounded-pill px-4" onclick="logout()">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CONTEÚDO PRINCIPAL ===== -->
+    <div class="container-fluid px-4">
+        <div class="row g-4">
+            <!-- COLUNA ESQUERDA: PRODUTOS E BUSCA -->
+            <div class="col-lg-8">
+                <!-- Barra de busca premium -->
+                <div class="td-card mb-4">
+                    <div class="card-body p-4">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-8">
+                                <div class="search-box">
+                                    <input type="text" 
+                                           id="searchInput" 
+                                           class="form-control form-control-lg" 
+                                           placeholder="Digite código ou nome do produto...">
+                                    <span class="search-icon">
+                                        <i class="bi bi-upc-scan"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-td-primary w-100 py-3" onclick="searchProduct()">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3 d-flex gap-2 flex-wrap">
+                            <span class="badge bg-light text-dark p-2"><i class="bi bi-upc"></i> F2: Buscar</span>
+                            <span class="badge bg-light text-dark p-2"><i class="bi bi-cart"></i> F5: Finalizar</span>
+                            <span class="badge bg-light text-dark p-2"><i class="bi bi-percent"></i> Ctrl+D: Desconto</span>
+                            <span class="badge bg-light text-dark p-2"><i class="bi bi-trash"></i> Ctrl+L: Limpar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produtos em grid -->
+                <div class="td-card mb-4">
+                    <div class="td-card-header">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Produtos Disponíveis</span>
+                        <span class="ms-auto badge bg-primary rounded-pill" id="productCount">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3" id="productsGrid">
+                            <!-- JS vai preencher -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teclado rápido (atalhos) -->
+                <div class="td-card">
+                    <div class="td-card-header">
+                        <i class="bi bi-keyboard"></i>
+                        <span>Teclado Rápido</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-4 col-md-2">
+                                <button class="btn btn-outline-secondary keypad-btn w-100" onclick="addQuickProduct(1)">☕ Café</button>
+                            </div>
+                            <div class="col-4 col-md-2">
+                                <button class="btn btn-outline-secondary keypad-btn w-100" onclick="addQuickProduct(2)">⚡ Energético</button>
+                            </div>
+                            <div class="col-4 col-md-2">
+                                <button class="btn btn-outline-secondary keypad-btn w-100" onclick="addQuickProduct(3)">💧 Água</button>
+                            </div>
+                            <div class="col-4 col-md-2">
+                                <button class="btn btn-outline-secondary keypad-btn w-100" onclick="addQuickProduct(4)">🍫 Chocolate</button>
+                            </div>
+                            <div class="col-4 col-md-2">
+                                <button class="btn btn-outline-secondary keypad-btn w-100" onclick="addQuickProduct(5)">🥨 Salgadinho</button>
+                            </div>
+                            <div class="col-4 col-md-2">
+                                <button class="btn btn-outline-secondary keypad-btn w-100" onclick="addQuickProduct(6)">🥟 Pastel</button>
+                            </div>
+                            <div class="col-6 col-md-3 mt-2">
+                                <button class="btn btn-outline-danger keypad-btn w-100" onclick="clearCart()">
+                                    <i class="bi bi-trash3"></i> Limpar
+                                </button>
+                            </div>
+                            <div class="col-6 col-md-3 mt-2">
+                                <button class="btn btn-outline-warning keypad-btn w-100" onclick="applyDiscount()">
+                                    <i class="bi bi-percent"></i> Desconto
+                                </button>
+                            </div>
+                            <div class="col-6 col-md-3 mt-2">
+                                <button class="btn btn-outline-info keypad-btn w-100" onclick="addCustomer()">
+                                    <i class="bi bi-person-plus"></i> Cliente
+                                </button>
+                            </div>
+                            <div class="col-6 col-md-3 mt-2">
+                                <button class="btn btn-td-success keypad-btn w-100" onclick="finalizeSale()">
+                                    <i class="bi bi-check2-circle"></i> Finalizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA: CARRINHO -->
+            <div class="col-lg-4">
+                <div class="cart-container td-card">
+                    <div class="cart-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0 fw-bold"><i class="bi bi-cart3 me-2"></i> CARRINHO</h4>
+                            <span class="badge bg-white text-dark rounded-pill px-3 py-2" id="cartCount">0 itens</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-0">
+                        <!-- Itens do carrinho -->
+                        <div id="cartItems" style="max-height: 320px; overflow-y: auto;">
+                            <!-- JS vai preencher -->
+                        </div>
+                        
+                        <!-- Resumo -->
+                        <div class="p-4 border-top">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Subtotal:</span>
+                                <span class="fw-bold" id="subtotal">R$ 0,00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Desconto:</span>
+                                <span class="text-danger" id="discount">R$ 0,00</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-2">
+                                <span class="h5 mb-0">TOTAL</span>
+                                <span class="total-display" id="totalAmount">R$ 0,00</span>
+                            </div>
+                        </div>
+
+                        <!-- Pagamento -->
+                        <div class="px-4 pb-3">
+                            <h6 class="fw-bold mb-3"><i class="bi bi-credit-card me-2"></i> Forma de Pagamento</h6>
+                            
+                            <div class="payment-option" onclick="selectPayment('dinheiro')" id="paymentDinheiro">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-cash-stack fs-4 me-3 text-success"></i>
+                                    <div>
+                                        <div class="fw-bold">Dinheiro</div>
+                                        <small class="text-muted">Pagamento em espécie</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="payment-option" onclick="selectPayment('cartao')" id="paymentCartao">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-credit-card fs-4 me-3 text-primary"></i>
+                                    <div>
+                                        <div class="fw-bold">Cartão</div>
+                                        <small class="text-muted">Débito ou Crédito</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="payment-option" onclick="selectPayment('pix')" id="paymentPix">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-qr-code-scan fs-4 me-3 text-info"></i>
+                                    <div>
+                                        <div class="fw-bold">PIX</div>
+                                        <small class="text-muted">Pagamento instantâneo</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Campo dinheiro (valor recebido) -->
+                            <div id="cashInput" style="display: none;" class="mt-3">
+                                <label class="form-label fw-bold">Valor recebido (R$)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">R$</span>
+                                    <input type="number" id="cashReceived" class="form-control form-control-lg" step="0.01" min="0" value="0" oninput="calculateChange()">
+                                </div>
+                                <div class="alert alert-success mt-3 py-2 d-flex justify-content-between">
+                                    <span>Troco:</span>
+                                    <strong id="changeAmount">R$ 0,00</strong>
+                                </div>
+                            </div>
+
+                            <!-- Cliente e observações -->
+                            <div class="mt-3">
+                                <label class="form-label fw-bold">Cliente</label>
+                                <input type="text" id="customerName" class="form-control" placeholder="Nome do cliente" value="Consumidor">
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label fw-bold">Observações</label>
+                                <textarea id="notes" class="form-control" rows="2" placeholder="Ex: troco, entregar..."></textarea>
+                            </div>
+
+                            <!-- Botão finalizar -->
+                            <button class="btn btn-td-success w-100 py-3 mt-4 fw-bold fs-6" onclick="processPayment()" id="btnFinish">
+                                <i class="bi bi-check2-circle me-2"></i> FINALIZAR VENDA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL DE DESCONTO ===== -->
+    <div class="modal fade td-modal" id="discountModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-percent me-2"></i> Aplicar Desconto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Valor do desconto (R$)</label>
+                        <input type="number" id="discountValue" class="form-control form-control-lg" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ou percentual (%)</label>
+                        <input type="number" id="discountPercent" class="form-control form-control-lg" step="0.1" min="0" max="100" value="0" oninput="updateDiscountFromPercent()">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-td-primary rounded-pill px-5" onclick="applyDiscountConfirm()">Aplicar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL DE RECIBO ===== -->
+    <div class="modal fade td-modal" id="receiptModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-receipt me-2"></i> Recibo da Venda</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <pre id="receiptContent" style="font-family: 'Courier New', monospace; white-space: pre-wrap; background: #f8f9fc; padding: 20px; border-radius: 16px;"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-td-primary rounded-pill px-4" onclick="printReceipt()">
+                        <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Registro do Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .catch(err => console.error('Falha ao registrar Service Worker:', err));
+            });
+        }
+
+        // ========== SISTEMA PDV TANQUE DIGITAL ==========
+        // Versão Premium - Unificada e Otimizada
+        
+        // Estado global da aplicação
+        const state = {
+            produtos: [],
+            cart: [],
+            selectedPayment: null,
+            cashReceived: 0,
+            discount: 0,
+            customer: 'Consumidor',
+            notes: ''
+        };
+
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            setupKeyboardShortcuts();
+        });
+
+        function init() {
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+            loadProducts();
+            updateCartDisplay();
+            
+            // Foco no campo de busca
+            setTimeout(() => {
+                document.getElementById('searchInput').focus();
+            }, 300);
+        }
+
+        // ===== DATA E HORA =====
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').innerHTML = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('currentDate').innerHTML = now.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' });
+        }
+
+        // ===== PRODUTOS =====
+        function loadProducts() {
+            // Dados de exemplo com a cara da Tanque Digital
+            state.produtos = [
+                { id: 1, nome: "Café Premium", preco: 12.90, estoque: 45, categoria: "Bebidas" },
+                { id: 2, nome: "Energético", preco: 8.90, estoque: 28, categoria: "Bebidas" },
+                { id: 3, nome: "Água Mineral", preco: 3.50, estoque: 82, categoria: "Bebidas" },
+                { id: 4, nome: "Chocolate", preco: 7.90, estoque: 54, categoria: "Doces" },
+                { id: 5, nome: "Salgadinho", preco: 6.90, estoque: 37, categoria: "Salgados" },
+                { id: 6, nome: "Pastel", preco: 8.90, estoque: 22, categoria: "Salgados" },
+                { id: 7, nome: "Refrigerante Lata", preco: 6.50, estoque: 63, categoria: "Bebidas" },
+                { id: 8, nome: "Suco Natural", preco: 9.90, estoque: 19, categoria: "Bebidas" },
+                { id: 9, nome: "Bolo Fatia", preco: 7.50, estoque: 15, categoria: "Doces" },
+                { id: 10, nome: "Sanduíche", preco: 14.90, estoque: 12, categoria: "Salgados" },
+                { id: 11, nome: "Água com Gás", preco: 4.00, estoque: 41, categoria: "Bebidas" },
+                { id: 12, nome: "Café Expresso", preco: 5.90, estoque: 60, categoria: "Bebidas" }
+            ];
+            
+            renderProducts();
+            document.getElementById('productCount').innerHTML = `${state.produtos.length} produtos`;
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            
+            state.produtos.forEach(prod => {
+                const stockClass = prod.estoque < 10 ? 'bg-warning' : 'bg-success';
+                const stockText = prod.estoque < 10 ? 'Baixo' : 'Disponível';
+                
+                const col = document.createElement('div');
+                col.className = 'col';
+                col.innerHTML = `
+                    <div class="product-card card" onclick="addToCart(${prod.id})">
+                        <div class="card-body">
+                            <div class="product-name">${prod.nome}</div>
+                            <div class="product-price">R$ ${prod.preco.toFixed(2)}</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="badge ${stockClass} badge-stock">${stockText}</span>
+                                <small class="text-muted">${prod.categoria}</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(col);
+            });
+        }
+
+        // ===== CARRINHO =====
+        function addToCart(productId) {
+            const product = state.produtos.find(p => p.id === productId);
+            if (!product) return;
+            
+            if (product.estoque <= 0) {
+                alert('❌ Produto sem estoque!');
+                return;
+            }
+            
+            const existingItem = state.cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                if (existingItem.quantity >= product.estoque) {
+                    alert('⚠️ Estoque insuficiente!');
+                    return;
+                }
+                existingItem.quantity += 1;
+            } else {
+                state.cart.push({
+                    id: product.id,
+                    nome: product.nome,
+                    preco: product.preco,
+                    quantity: 1
+                });
+            }
+            
+            updateCartDisplay();
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchInput').focus();
+        }
+
+        function addQuickProduct(type) {
+            const map = { 1:1, 2:2, 3:3, 4:4, 5:5, 6:6 };
+            if (map[type]) addToCart(map[type]);
+        }
+
+        function updateQuantity(index, delta) {
+            const item = state.cart[index];
+            const product = state.produtos.find(p => p.id === item.id);
+            
+            item.quantity += delta;
+            if (item.quantity < 1) item.quantity = 1;
+            if (product && item.quantity > product.estoque) {
+                item.quantity = product.estoque;
+                alert('⚠️ Quantidade máxima em estoque!');
+            }
+            
+            updateCartDisplay();
+        }
+
+        function removeFromCart(index) {
+            state.cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function clearCart() {
+            if (state.cart.length > 0 && confirm('Deseja limpar todo o carrinho?')) {
+                state.cart = [];
+                state.discount = 0;
+                updateCartDisplay();
+                document.getElementById('discountValue').value = '0';
+                document.getElementById('discountPercent').value = '0';
+            }
+        }
+
+        function updateCartDisplay() {
+            const container = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const btnFinish = document.getElementById('btnFinish');
+            
+            const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.innerHTML = `${totalItems} ${totalItems === 1 ? 'item' : 'itens'}`;
+            
+            if (state.cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted py-5 px-3">
+                        <i class="bi bi-cart-x" style="font-size: 3.5rem; opacity: 0.4;"></i>
+                        <p class="mt-3 fw-bold">Carrinho vazio</p>
+                        <small class="text-muted">Adicione produtos para começar</small>
+                    </div>
+                `;
+                btnFinish.disabled = true;
+            } else {
+                let html = '';
+                state.cart.forEach((item, index) => {
+                    const itemTotal = item.preco * item.quantity;
+                    html += `
+                        <div class="cart-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="fw-bold">${item.nome}</span>
+                                    <div class="text-success fw-bold mt-1">R$ ${itemTotal.toFixed(2)}</div>
+                                    <small class="text-muted">R$ ${item.preco.toFixed(2)} un.</small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="input-group input-group-sm" style="width: 110px;">
+                                        <button class="btn btn-outline-secondary" onclick="updateQuantity(${index}, -1)">-</button>
+                                        <input type="text" class="form-control text-center" value="${item.quantity}" readonly style="background: white;">
+                                        <button class="btn btn-outline-secondary" onclick="updateQuantity(${index}, 1)">+</button>
+                                    </div>
+                                    <button class="btn btn-link text-danger p-0 mt-2" onclick="removeFromCart(${index})">
+                                        <i class="bi bi-trash"></i> Remover
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                btnFinish.disabled = false;
+            }
+            
+            calculateTotals();
+        }
+
+        // ===== TOTAIS E DESCONTOS =====
+        function calculateTotals() {
+            const subtotal = state.cart.reduce((sum, item) => sum + (item.preco * item.quantity), 0);
+            const total = subtotal - state.discount;
+            
+            document.getElementById('subtotal').innerHTML = `R$ ${subtotal.toFixed(2)}`;
+            document.getElementById('discount').innerHTML = `R$ ${state.discount.toFixed(2)}`;
+            document.getElementById('totalAmount').innerHTML = `R$ ${total.toFixed(2)}`;
+            
+            if (state.selectedPayment === 'dinheiro') calculateChange();
+        }
+
+        // ===== PAGAMENTO =====
+        function selectPayment(method) {
+            state.selectedPayment = method;
+            
+            ['dinheiro', 'cartao', 'pix'].forEach(m => {
+                const el = document.getElementById(`payment${m.charAt(0).toUpperCase() + m.slice(1)}`);
+                if (el) el.classList.remove('selected');
+            });
+            
+            const selectedEl = document.getElementById(`payment${method.charAt(0).toUpperCase() + method.slice(1)}`);
+            if (selectedEl) selectedEl.classList.add('selected');
+            
+            document.getElementById('cashInput').style.display = method === 'dinheiro' ? 'block' : 'none';
+        }
+
+        function calculateChange() {
+            const cashReceived = parseFloat(document.getElementById('cashReceived').value) || 0;
+            state.cashReceived = cashReceived;
+            
+            const total = state.cart.reduce((sum, item) => sum + (item.preco * item.quantity), 0) - state.discount;
+            const change = Math.max(0, cashReceived - total);
+            
+            document.getElementById('changeAmount').innerHTML = `R$ ${change.toFixed(2)}`;
+        }
+
+        // ===== BUSCA DE PRODUTOS =====
+        function searchProduct() {
+            const term = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!term) return;
+            
+            // Busca por ID exato
+            const byId = state.produtos.find(p => p.id.toString() === term);
+            if (byId) {
+                addToCart(byId.id);
+                return;
+            }
+            
+            // Busca por nome
+            const byName = state.produtos.find(p => p.nome.toLowerCase().includes(term));
+            if (byName) {
+                addToCart(byName.id);
+            } else {
+                alert('🔍 Produto não encontrado!');
+            }
+            
+            document.getElementById('searchInput').value = '';
+        }
+
+        // ===== DESCONTO =====
+        function applyDiscount() {
+            if (state.cart.length === 0) {
+                alert('Adicione produtos ao carrinho primeiro!');
+                return;
+            }
+            const modal = new bootstrap.Modal(document.getElementById('discountModal'));
+            modal.show();
+        }
+
+        function updateDiscountFromPercent() {
+            const percent = parseFloat(document.getElementById('discountPercent').value) || 0;
+            const subtotal = state.cart.reduce((sum, item) => sum + (item.preco * item.quantity), 0);
+            const discountValue = subtotal * (percent / 100);
+            document.getElementById('discountValue').value = discountValue.toFixed(2);
+        }
+
+        function applyDiscountConfirm() {
+            const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
+            const subtotal = state.cart.reduce((sum, item) => sum + (item.preco * item.quantity), 0);
+            
+            if (discountValue > subtotal) {
+                alert('❌ Desconto não pode ser maior que o subtotal!');
+                return;
+            }
+            
+            state.discount = discountValue;
+            calculateTotals();
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('discountModal'));
+            modal.hide();
+        }
+
+        // ===== FINALIZAÇÃO =====
+        function processPayment() {
+            if (state.cart.length === 0) {
+                alert('🛒 Carrinho vazio!');
+                return;
+            }
+            
+            if (!state.selectedPayment) {
+                alert('💳 Selecione uma forma de pagamento!');
+                return;
+            }
+            
+            if (state.selectedPayment === 'dinheiro') {
+                const total = state.cart.reduce((sum, item) => sum + (item.preco * item.quantity), 0) - state.discount;
+                if (state.cashReceived < total) {
+                    alert('💰 Valor recebido é menor que o total!');
+                    return;
+                }
+            }
+            
+            // Simular venda com sucesso
+            const vendaId = Math.floor(Math.random() * 10000);
+            const vendaData = {
+                itens: [...state.cart],
+                total: state.cart.reduce((sum, item) => sum + (item.preco * item.quantity), 0) - state.discount,
+                forma_pagamento: state.selectedPayment,
+                cliente: document.getElementById('customerName').value || 'Consumidor',
+                notas: document.getElementById('notes').value || ''
+            };
+            
+            // Atualizar estoque
+            state.cart.forEach(item => {
+                const prod = state.produtos.find(p => p.id === item.id);
+                if (prod) prod.estoque -= item.quantity;
+            });
+            
+            showReceipt(vendaId, vendaData);
+            
+            // Reset
+            state.cart = [];
+            state.discount = 0;
+            state.selectedPayment = null;
+            state.cashReceived = 0;
+            
+            document.getElementById('customerName').value = 'Consumidor';
+            document.getElementById('notes').value = '';
+            document.getElementById('cashReceived').value = '0';
+            document.getElementById('discountValue').value = '0';
+            document.getElementById('discountPercent').value = '0';
+            
+            ['dinheiro','cartao','pix'].forEach(m => {
+                const el = document.getElementById(`payment${m.charAt(0).toUpperCase() + m.slice(1)}`);
+                if (el) el.classList.remove('selected');
+            });
+            
+            document.getElementById('cashInput').style.display = 'none';
+            renderProducts();
+            updateCartDisplay();
+        }
+
+        function finalizeSale() {
+            if (state.cart.length > 0) processPayment();
+        }
+
+        function showReceipt(vendaId, data) {
+            const now = new Date();
+            const receipt = `
+================================
+    🏪 TANQUE DIGITAL PDV
+================================
+VENDA: #${vendaId.toString().padStart(6, '0')}
+DATA: ${now.toLocaleDateString('pt-BR')}  ${now.toLocaleTimeString('pt-BR')}
+OPERADOR: João Silva
+================================
+ITENS:
+${data.itens.map(i => `${i.quantity}x ${i.nome.padEnd(20, ' ')} R$ ${(i.quantity * i.preco).toFixed(2)}`).join('\n')}
+================================
+SUBTOTAL: R$ ${data.itens.reduce((s,i) => s + (i.preco * i.quantity), 0).toFixed(2)}
+DESCONTO: R$ ${state.discount.toFixed(2)}
+TOTAL: R$ ${data.total.toFixed(2)}
+================================
+FORMA PGTO: ${data.forma_pagamento.toUpperCase()}
+${data.forma_pagamento === 'dinheiro' ? `RECEBIDO: R$ ${state.cashReceived.toFixed(2)}\nTROCO: R$ ${(state.cashReceived - data.total).toFixed(2)}` : ''}
+CLIENTE: ${data.cliente}
+${data.notas ? `OBS: ${data.notas}` : ''}
+================================
+      OBRIGADO E VOLTE SEMPRE!
+      TANQUE DIGITAL TECNOLOGIA
+================================
+            `;
+            
+            document.getElementById('receiptContent').innerHTML = receipt;
+            const modal = new bootstrap.Modal(document.getElementById('receiptModal'));
+            modal.show();
+        }
+
+        function printReceipt() {
+            const content = document.getElementById('receiptContent').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html><head><title>Recibo Tanque Digital</title>
+                <style>body { font-family: 'Courier New', monospace; font-size: 12px; padding: 20px; } pre { white-space: pre-wrap; }</style>
+                </head><body><pre>${content.replace(/<br>/g, '')}</pre>
+                <script>window.onload=function(){window.print();window.close();}<\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // ===== CLIENTE =====
+        function addCustomer() {
+            const name = prompt('Nome do cliente:', 'Consumidor');
+            if (name !== null) document.getElementById('customerName').value = name;
+        }
+
+        // ===== LOGOUT =====
+        function logout() {
+            if (confirm('Deseja sair do sistema PDV?')) {
+                window.location.reload(); // Simula logout
+            }
+        }
+
+        // ===== ATALHOS TECLADO =====
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F2') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+                if (e.key === 'F5') { e.preventDefault(); if (state.cart.length > 0) processPayment(); }
+                if (e.key === 'Escape') { document.getElementById('searchInput').value = ''; }
+                if (e.ctrlKey && e.key === 'd') { e.preventDefault(); applyDiscount(); }
+                if (e.ctrlKey && e.key === 'l') { e.preventDefault(); clearCart(); }
+            });
+        }
+    </script>
+</body>
+</html>

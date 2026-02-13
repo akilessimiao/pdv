@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "total": 9.9,
+    "forma_pagamento": "pix",
+    "itens": [
+      {
+        "id": 8,
+        "nome": "Suco Natural",
+        "preco": 9.9,
+        "quantity": 1
+      }
+    ],
+    "cliente": "Consumidor",
+    "vendedor": "Sistema",
+    "data": "2026-02-11T16:44:22.373Z"
+  }
+]

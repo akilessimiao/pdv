@@ -1,0 +1,52 @@
+// backend/prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  senha     String
+  tipo      String   @default("operador") // admin, operador
+  chaveAtivacao String? @unique
+  criadoEm  DateTime @default(now())
+}
+
+model Produto {
+  id        Int      @id @default(autoincrement())
+  codigo    String?  @unique
+  nome      String
+  descricao String?
+  preco     Float
+  estoque   Int      @default(0)
+  categoria String?
+  imagem    String?
+  ativo     Boolean  @default(true)
+  criadoEm  DateTime @default(now())
+}
+
+model Venda {
+  id        Int      @id @default(autoincrement())
+  cliente   String?
+  itens     Json     // Array de produtos
+  total     Float
+  desconto  Float    @default(0)
+  formaPagamento String // dinheiro, cartao, pix
+  origem    String   @default("pdv") // pdv, online
+  status    String   @default("concluida")
+  criadoEm  DateTime @default(now())
+  usuarioId Int?
+  usuario   Usuario? @relation(fields: [usuarioId], references: [id])
+}
+
+model Configuracao {
+  id    Int     @id @default(autoincrement())
+  chave String  @unique
+  valor String
+}

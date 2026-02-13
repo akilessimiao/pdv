@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "nome": "Café Premium",
+    "preco": 12.9,
+    "estoque": 50,
+    "categoria": "Bebidas"
+  },
+  {
+    "id": 2,
+    "nome": "Energético",
+    "preco": 8.5,
+    "estoque": 30,
+    "categoria": "Bebidas"
+  },
+  {
+    "id": 3,
+    "nome": "Água 500ml",
+    "preco": 3,
+    "estoque": 100,
+    "categoria": "Bebidas"
+  },
+  {
+    "id": 4,
+    "nome": "Chocolate",
+    "preco": 6.9,
+    "estoque": 80,
+    "categoria": "Doces"
+  },
+  {
+    "id": 5,
+    "nome": "Salgadinho",
+    "preco": 5.5,
+    "estoque": 60,
+    "categoria": "Salgados"
+  },
+  {
+    "id": 6,
+    "nome": "Pastel",
+    "preco": 7.9,
+    "estoque": 40,
+    "categoria": "Salgados"
+  },
+  {
+    "id": 7,
+    "nome": "Refrigerante Lata",
+    "preco": 6.5,
+    "estoque": 70,
+    "categoria": "Bebidas"
+  },
+  {
+    "id": 8,
+    "nome": "Suco Natural",
+    "preco": 9.9,
+    "estoque": 29,
+    "categoria": "Bebidas"
+  },
+  {
+    "id": 9,
+    "nome": "Pão de Queijo",
+    "preco": 4.5,
+    "estoque": 45,
+    "categoria": "Salgados"
+  },
+  {
+    "id": 10,
+    "nome": "Brigadeiro",
+    "preco": 3.5,
+    "estoque": 120,
+    "categoria": "Doces"
+  }
+]
